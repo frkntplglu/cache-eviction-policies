@@ -18,7 +18,7 @@ type entry[K comparable, V any] struct {
 	freq  int
 }
 
-func NewLFU[K comparable, V any](cap int) *LFU[K, V] {
+func New[K comparable, V any](cap int) *LFU[K, V] {
 	return &LFU[K, V]{
 		capacity: cap,
 		cache:    make(map[K]*list.Element),
@@ -36,7 +36,6 @@ func (c *LFU[K, V]) Get(key K) (V, bool) {
 	return zero, false
 }
 
-// Put
 func (c *LFU[K, V]) Put(key K, value V) {
 	if c.capacity == 0 {
 		return
@@ -50,7 +49,6 @@ func (c *LFU[K, V]) Put(key K, value V) {
 	}
 
 	if len(c.cache) >= c.capacity {
-		// Evict least frequently used
 		lst := c.freqMap[c.minFreq]
 		toRemove := lst.Back()
 		if toRemove != nil {
@@ -71,7 +69,6 @@ func (c *LFU[K, V]) Put(key K, value V) {
 	c.minFreq = 1
 }
 
-// increment frequency
 func (c *LFU[K, V]) increment(el *list.Element) {
 	entry := el.Value.(*entry[K, V])
 	oldFreq := entry.freq
